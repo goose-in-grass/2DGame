@@ -57,57 +57,52 @@ public class Player extends Entity {
 
 
     public void update() {
-        if (keyH.upPressed == true || keyH.downPressed == true ||
-                keyH.leftPressed == true || keyH.rightPressed == true) {
-            if (keyH.upPressed == true) {
+        if (keyH.upPressed || keyH.downPressed || keyH.leftPressed || keyH.rightPressed) {
+
+            // направления для движения
+            double dx = 0;
+            double dy = 0;
+
+            if (keyH.upPressed) {
+                dy -= 1;
                 direction = "up";
-
-            } else if (keyH.downPressed == true) {
+            }
+            if (keyH.downPressed) {
+                dy += 1;
                 direction = "down";
-
-            } else if (keyH.leftPressed == true) {
+            }
+            if (keyH.leftPressed) {
+                dx -= 1;
                 direction = "left";
-
-            } else if (keyH.rightPressed == true) {
+            }
+            if (keyH.rightPressed) {
+                dx += 1;
                 direction = "right";
-
             }
 
-
-            //check collision
+            // проверка столкновений
             collisionOn = false;
             gp.cChecker.checkTile(this);
-            if (collisionOn == false) {
-                switch (direction) {
-                    case "up":
-                        worldY -= speed;
-                        break;
-                    case "down":
-                        worldY += speed;
-                        break;
-                    case "left":
-                        worldX -= speed;
-                        break;
-                    case "right":
-                        worldX += speed;
-                        break;
-                }
+
+            if (!collisionOn && (dx != 0 || dy != 0)) {
+                // нормализация
+                double length = Math.sqrt(dx * dx + dy * dy);
+                dx = (dx / length) * speed;
+                dy = (dy / length) * speed;
+
+                worldX += dx;
+                worldY += dy;
             }
 
-
+            // анимация
             spriteCounter++;
             if (spriteCounter > 12) {
-                if (spriteNum == 1) {
-                    spriteNum = 2;
-                } else if (spriteNum == 2) {
-                    spriteNum = 1;
-                }
+                spriteNum = (spriteNum == 1) ? 2 : 1;
                 spriteCounter = 0;
             }
         }
-
-
     }
+
 
     public void draw(Graphics g2) {
         BufferedImage image = null;

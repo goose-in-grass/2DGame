@@ -1,3 +1,5 @@
+package main;
+
 import javax.swing.*;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
@@ -7,7 +9,17 @@ public class Main {
         JFrame window = new JFrame();
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setSize(800, 600);
+
+        GamePanel gamePanel = new GamePanel();
+        window.add(gamePanel);
+
+        window.pack();
+
         window.setLocationRelativeTo(null);
         window.setVisible(true);
+
+
+        gamePanel.setupGame();
+        gamePanel.startGameThread();
     }
 }
