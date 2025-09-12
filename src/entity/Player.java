@@ -15,6 +15,7 @@ public class Player extends Entity {
 
     public final int screenX;
     public final int screenY;
+    int haskey = 0;
 
     public Player(GamePanel gp, KeyHandler keyH) {
         this.gp = gp;
@@ -23,9 +24,13 @@ public class Player extends Entity {
         screenX = gp.screenWidth / 2 - (gp.tileSize / 2);
         screenY = gp.screenHeight / 2 - (gp.tileSize / 2);
 
-        solidArea = new Rectangle(8, 16, 32, 32);
-
-
+        solidArea = new Rectangle();
+        solidArea.x = 8;
+        solidArea.y = 16;
+        solidAreaDefaultX = solidArea.x;
+        solidAreaDefaultY = solidArea.y;
+        solidArea.width = 32;
+        solidArea.height = 32;
         setDefaultValues();
         getPlayerImage();
     }
@@ -57,50 +62,82 @@ public class Player extends Entity {
 
 
     public void update() {
-        if (keyH.upPressed || keyH.downPressed || keyH.leftPressed || keyH.rightPressed) {
-
-            // направления для движения
-            double dx = 0;
-            double dy = 0;
-
-            if (keyH.upPressed) {
-                dy -= 1;
+        if (keyH.upPressed == true || keyH.downPressed == true ||
+                keyH.leftPressed == true || keyH.rightPressed == true) {
+            if (keyH.upPressed == true) {
                 direction = "up";
-            }
-            if (keyH.downPressed) {
-                dy += 1;
+
+            } else if (keyH.downPressed == true) {
                 direction = "down";
-            }
-            if (keyH.leftPressed) {
-                dx -= 1;
+
+            } else if (keyH.leftPressed == true) {
                 direction = "left";
-            }
-            if (keyH.rightPressed) {
-                dx += 1;
+
+            } else if (keyH.rightPressed == true) {
                 direction = "right";
+
             }
 
-            // проверка столкновений
+
+            //check tile collision
             collisionOn = false;
             gp.cChecker.checkTile(this);
 
-            if (!collisionOn && (dx != 0 || dy != 0)) {
-                // нормализация
-                double length = Math.sqrt(dx * dx + dy * dy);
-                dx = (dx / length) * speed;
-                dy = (dy / length) * speed;
+            //check object collision
+            int objIndex = gp.cChecker.checkObject(this, true);
+            pickUpObject(objIndex);
 
-                worldX += dx;
-                worldY += dy;
+            if (collisionOn == false) {
+                switch (direction) {
+                    case "up":
+                        worldY -= speed;
+                        break;
+                    case "down":
+                        worldY += speed;
+                        break;
+                    case "left":
+                        worldX -= speed;
+                        break;
+                    case "right":
+                        worldX += speed;
+                        break;
+                }
             }
 
-            // анимация
+
             spriteCounter++;
             if (spriteCounter > 12) {
-                spriteNum = (spriteNum == 1) ? 2 : 1;
+                if (spriteNum == 1) {
+                    spriteNum = 2;
+                } else if (spriteNum == 2) {
+                    spriteNum = 1;
+                }
                 spriteCounter = 0;
             }
         }
+
+
+    }
+
+    public void pickUpObject(int i){
+        if (i != 999){// нет коллизии с объектом
+            String objectName = gp.obj[i].name;
+            switch (objectName){
+                case "Key":
+                    haskey++;
+                    gp.obj[i] = null;
+                    System.out.println("Key:" + haskey);
+                    break;
+                case  "Door":
+                    if (haskey > 0){
+                        gp.obj[i] = null;
+                        haskey--;
+                    }
+                    System.out.println("Key:" + haskey);
+                    break;
+            }
+        }
+
     }
 
 
