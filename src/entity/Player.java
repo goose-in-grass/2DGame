@@ -15,7 +15,7 @@ public class Player extends Entity {
 
     public final int screenX;
     public final int screenY;
-    int haskey = 0;
+    public int  haskey = 0;
 
     public Player(GamePanel gp, KeyHandler keyH) {
         this.gp = gp;
@@ -106,7 +106,7 @@ public class Player extends Entity {
 
 
             spriteCounter++;
-            if (spriteCounter > 12) {
+            if (spriteCounter > 10) {
                 if (spriteNum == 1) {
                     spriteNum = 2;
                 } else if (spriteNum == 2) {
@@ -124,16 +124,23 @@ public class Player extends Entity {
             String objectName = gp.obj[i].name;
             switch (objectName){
                 case "Key":
+                    gp.playSE(1);
                     haskey++;
                     gp.obj[i] = null;
                     System.out.println("Key:" + haskey);
                     break;
                 case  "Door":
                     if (haskey > 0){
+                        gp.playSE(3);
                         gp.obj[i] = null;
                         haskey--;
                     }
                     System.out.println("Key:" + haskey);
+                    break;
+                case "Boots":
+                    gp.playSE(2);
+                    speed +=2;
+                    gp.obj[i] = null;
                     break;
             }
         }
